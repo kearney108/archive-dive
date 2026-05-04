@@ -76,7 +76,7 @@ Insert a new row at the top of the volumes table (newest first):
 | `vol·{NN}` | [**What Surfaced — {Label}**](vol-{NN}-{month}-{year}.md) — *{MONTH_UPPER} · {YEAR} · 108* |
 ```
 
-## Step 7 — Commit and push
+## Step 7 — Commit and push to archive-dive
 
 ```bash
 git config user.email "johndanielkearney@gmail.com"
@@ -87,3 +87,45 @@ git push
 ```
 
 If push fails, stop and report the exact error.
+
+## Step 8 — Add the post to the static site
+
+Clone the private site source:
+```bash
+git clone https://github.com/AUTHENSOR/kearney108-site.git /tmp/kearney108-site
+```
+
+**Create the content file** at `/tmp/kearney108-site/src/content/posts/archive-dive/{NN}-{month}-{year}.md`:
+
+```markdown
+---
+title: "What Surfaced — {Label}"
+subtitle: "{one-line hook from the opener — 6 words or fewer}"
+section: archive-dive
+number: "{NN}"
+date: {YYYY-MM-01}
+banner: /covers/post-archive-dive-{NN}.png
+tags: [{source-names used this month}]
+---
+
+{full editorial prose — same text as Step 5, no banner img tag, no colophon sub line}
+```
+
+**Copy the banner:**
+```bash
+cp vol-{NN}-banner.png /tmp/kearney108-site/public/covers/post-archive-dive-{NN}.png
+```
+
+**Commit and push the source** — the GitHub Actions workflow will build and deploy automatically:
+```bash
+cd /tmp/kearney108-site
+git config user.email "johndanielkearney@gmail.com"
+git config user.name "John Kearney"
+git add src/content/posts/archive-dive/ public/covers/post-archive-dive-{NN}.png
+git commit -m "archive-dive vol·{NN} — {Label}"
+git push
+```
+
+GitHub Actions will pick this up, build the Astro site, and push `dist/` to `kearney108/kearney108.github.io` automatically.
+
+If the push fails, report the exact error and stop.
